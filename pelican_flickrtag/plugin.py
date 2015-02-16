@@ -63,9 +63,9 @@ def size_for_alias(sizes, alias):
         alias = 'Medium'
     return [s for s in sizes if s['label'] == alias][0]
 
-def generic_replace(generator, type):
-    if type not in ('article', 'page'):
-        type = 'article'
+def generic_replace(generator, ct_type):
+    if ct_type not in ('article', 'page'):
+        ct_type = 'article'
 
 
     from jinja2 import Template
@@ -81,8 +81,8 @@ def generic_replace(generator, type):
     size_alias = generator.context.get('FLICKR_TAG_IMAGE_SIZE')
 
     photo_ids = set([])
-    logger.info('[flickrtag]: Parsing %ss for photo ids...' % type)
-    if type='article':
+    logger.info('[flickrtag]: Parsing %ss for photo ids...' % ct_type)
+    if ct_type == 'article':
         item_list = generator.articles
     else:
         item_list = generator.pages
@@ -90,7 +90,7 @@ def generic_replace(generator, type):
         for match in flickr_regex.findall(item._content):
             photo_ids.add(match[1])
 
-    logger.info('[flickrtag]: Found %d photo ids in the %ss' % len(photo_ids),type )
+    logger.info('[flickrtag]: Found %d photo ids in the %ss' % (len(photo_ids),ct_type) ) 
 
     try:
         with open(tmp_file, 'r') as f:
@@ -137,8 +137,8 @@ def generic_replace(generator, type):
     else:
         template = Template(default_template)
 
-    logger.info('[flickrtag]: Inserting photo information into %ss...' % type)
-    if type='article':
+    logger.info('[flickrtag]: Inserting photo information into %ss...' % ct_type)
+    if ct_type == 'article':
         item_list = generator.articles
     else:
         item_list = generator.pages
