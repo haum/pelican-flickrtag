@@ -63,8 +63,11 @@ def size_for_alias(sizes, alias):
         alias = 'Medium'
     return [s for s in sizes if s['label'] == alias][0]
 
+def generic_replace(generator, type):
+    if type not in ('article', 'page'):
+        type = 'article'
 
-def replace_article_tags(generator):
+
     from jinja2 import Template
 
     api = generator.flickr_api_client
@@ -78,12 +81,16 @@ def replace_article_tags(generator):
     size_alias = generator.context.get('FLICKR_TAG_IMAGE_SIZE')
 
     photo_ids = set([])
-    logger.info('[flickrtag]: Parsing articles for photo ids...')
-    for article in generator.articles:
-        for match in flickr_regex.findall(article._content):
+    logger.info('[flickrtag]: Parsing %ss for photo ids...' % type)
+    if type='article':
+        item_list = generator.articles
+    else:
+        item_list = generator.pages
+    for item in item_list:
+        for match in flickr_regex.findall(item._content):
             photo_ids.add(match[1])
 
-    logger.info('[flickrtag]: Found %d photo ids in the articles' % len(photo_ids))
+    logger.info('[flickrtag]: Found %d photo ids in the %ss' % len(photo_ids),type )
 
     try:
         with open(tmp_file, 'r') as f:
@@ -130,9 +137,13 @@ def replace_article_tags(generator):
     else:
         template = Template(default_template)
 
-    logger.info('[flickrtag]: Inserting photo information into articles...')
-    for article in generator.articles:
-        for match in flickr_regex.findall(article._content):
+    logger.info('[flickrtag]: Inserting photo information into %ss...' % type)
+    if type='article':
+        item_list = generator.articles
+    else:
+        item_list = generator.pages
+    for item in item_list:
+        for match in flickr_regex.findall(item._content):
             fid = match[1]
             if fid not in photo_mapping:
                 logger.error('[flickrtag]: Could not find info for a photo!')
@@ -145,91 +156,15 @@ def replace_article_tags(generator):
             # Render the template
             replacement = template.render(context)
 
-            article._content = article._content.replace(match[0], replacement)
+            item._content = item._content.replace(match[0], replacement)
+
+
+def replace_article_tags(generator):
+    generic_replace(generator, 'article')
 
 
 def replace_page_tags(generator):
-    from jinja2 import Template
-
-    api = generator.flickr_api_client
-    if api is None:
-        logger.error('[flickrtag]: Unable to get the Flickr API object')
-        return
-
-    tmp_file = generator.context.get('FLICKR_TAG_CACHE_LOCATION')
-
-    include_dimensions = generator.context.get('FLICKR_TAG_INCLUDE_DIMENSIONS')
-    size_alias = generator.context.get('FLICKR_TAG_IMAGE_SIZE')
-
-    photo_ids = set([])
-    logger.info('[flickrtag]: Parsing pages for photo ids...')
-    for page in generator.pages:
-        for match in flickr_regex.findall(page._content):
-            photo_ids.add(match[1])
-
-    logger.info('[flickrtag]: Found %d photo ids in the page' % len(photo_ids))
-
-    try:
-        with open(tmp_file, 'r') as f:
-            photo_mapping = pickle.load(f)
-    except (IOError, EOFError):
-        photo_mapping = {}
-    else:
-        # Get the difference of photo_ids and what have cached
-        cached_ids = set(photo_mapping.keys())
-        photo_ids = list(set(photo_ids) - cached_ids)
-
-    if photo_ids:
-        logger.info('[flickrtag]: Fetching photo information from Flickr...')
-        for id in photo_ids:
-            logger.info('[flickrtag]: Fetching photo information for %s' % id)
-            photo = api.Photo(id=id)
-            # Trigger the API call...
-            photo_mapping[id] = {
-                'title': photo.title,
-                'raw_url': url_for_alias(photo, size_alias),
-                'url': photo.url,
-            }
-
-            if include_dimensions:
-                sizes = photo.getSizes()
-                size = size_for_alias(sizes, size_alias)
-                photo_mapping[id]['width'] = size['width']
-                photo_mapping[id]['height'] = size['height']
-
-        with open(tmp_file, 'w') as f:
-            pickle.dump(photo_mapping, f)
-    else:
-        logger.info('[flickrtag]: Found pickled photo mapping')
-
-    # See if a custom template was provided
-    template_name = generator.context.get('FLICKR_TAG_TEMPLATE_NAME')
-    if template_name is not None:
-        # There's a custom template
-        try:
-            template = generator.get_template(template_name)
-        except Exception:
-            logger.error('[flickrtag]: Unable to find the custom template %s' % template_name)
-            template = Template(default_template)
-    else:
-        template = Template(default_template)
-
-    logger.info('[flickrtag]: Inserting photo information into pages...')
-    for page in generator.pages:
-        for match in flickr_regex.findall(page._content):
-            fid = match[1]
-            if fid not in photo_mapping:
-                logger.error('[flickrtag]: Could not find info for a photo!')
-                continue
-
-            # Create a context to render with
-            context = generator.context.copy()
-            context.update(photo_mapping[fid])
-
-            # Render the template
-            replacement = template.render(context)
-
-            page._content = page._content.replace(match[0], replacement)
+    generic_replace(generator, 'page')
 
 
 def register():
