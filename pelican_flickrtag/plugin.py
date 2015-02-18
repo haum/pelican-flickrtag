@@ -136,7 +136,7 @@ def generic_replace(generator, ct_type):
                 photo_mapping[id] = {
                     'title': "Placeholder",
                     'raw_url': generator.context.get('FLICKR_TAG_PLACE_HOLDER_PICT')
-                    'url': generator.context.get('FLICKR_TAG_PLACE_HOLDER_LINK'),
+                    'url': generator.context.get('FLICKR_TAG_PLACE_HOLDER_LINK')
                 }
 
         with open(tmp_file, 'w') as f:
