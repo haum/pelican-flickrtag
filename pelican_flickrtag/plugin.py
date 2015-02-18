@@ -41,7 +41,18 @@ def setup_flickr(generator):
             logger.warning('[flickrtag]: FLICKR_API_%s is not defined in the configuration' % key)
 
     generator.flickr_api_client = api_client
+    try:
+        place_holder_pict = generator.settings(FLICKR_TAG_PLACE_HOLDER_PICT)
+    except:
+        logger.error ('[flickrtag]: FLICKR_TAG_PLACE_HOLDER_PICT variable is mandatory in your config')
 
+    try:
+        place_holder_link = generator.settings(FLICKR_TAG_PLACE_HOLDER_LINK)
+    except:
+        generator.settings.setdefault('FLICKR_TAG_PLACE_HOLDER_LINK','https://github.com/haum/pelican-flickrtag')        
+        logger.warning ('[flickrtag]: FLICKR_TAG_PLACE_HOLDER_LINK is set to default')
+    
+    
     generator.settings.setdefault(
         'FLICKR_TAG_CACHE_LOCATION',
         '/tmp/com.chrisstreeter.flickrtag-images.cache')
@@ -108,17 +119,25 @@ def generic_replace(generator, ct_type):
             logger.info('[flickrtag]: Fetching photo information for %s' % id)
             photo = api.Photo(id=id)
             # Trigger the API call...
-            photo_mapping[id] = {
-                'title': photo.title,
-                'raw_url': url_for_alias(photo, size_alias),
-                'url': photo.url,
-            }
+            try:
+                photo_mapping[id] = {
+                    'title': photo.title,
+                    'raw_url': url_for_alias(photo, size_alias),
+                    'url': photo.url,
+                }
 
-            if include_dimensions:
-                sizes = photo.getSizes()
-                size = size_for_alias(sizes, size_alias)
-                photo_mapping[id]['width'] = size['width']
-                photo_mapping[id]['height'] = size['height']
+                if include_dimensions:
+                    sizes = photo.getSizes()
+                    size = size_for_alias(sizes, size_alias)
+                    photo_mapping[id]['width'] = size['width']
+                    photo_mapping[id]['height'] = size['height']
+
+            except:
+                photo_mapping[id] = {
+                    'title': "Placeholder",
+                    'raw_url': generator.context.get('FLICKR_TAG_PLACE_HOLDER_PICT')
+                    'url': generator.context.get('FLICKR_TAG_PLACE_HOLDER_LINK'),
+                }
 
         with open(tmp_file, 'w') as f:
             pickle.dump(photo_mapping, f)
