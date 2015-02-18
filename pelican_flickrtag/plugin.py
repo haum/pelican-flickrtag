@@ -42,12 +42,12 @@ def setup_flickr(generator):
 
     generator.flickr_api_client = api_client
     try:
-        place_holder_pict = generator.settings(FLICKR_TAG_PLACE_HOLDER_PICT)
+        place_holder_pict = generator.settings['FLICKR_TAG_PLACE_HOLDER_PICT']
     except:
         logger.error ('[flickrtag]: FLICKR_TAG_PLACE_HOLDER_PICT variable is mandatory in your config')
 
     try:
-        place_holder_link = generator.settings(FLICKR_TAG_PLACE_HOLDER_LINK)
+        place_holder_link = generator.settings['FLICKR_TAG_PLACE_HOLDER_LINK']
     except:
         generator.settings.setdefault('FLICKR_TAG_PLACE_HOLDER_LINK','https://github.com/haum/pelican-flickrtag')        
         logger.warning ('[flickrtag]: FLICKR_TAG_PLACE_HOLDER_LINK is set to default')
