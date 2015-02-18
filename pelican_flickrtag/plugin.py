@@ -13,7 +13,7 @@ import flickr as api_client
 from pelican import signals
 
 flickr_regex = re.compile(r'(\[flickr:id\=([0-9]+)\])')
-default_template = """<p class="caption-container">
+default_template = """<spam class="caption-container">
     <a class="caption" href="{{url}}" target="_blank">
         <img src="{{raw_url}}"
             alt="{{title}}"
@@ -25,7 +25,7 @@ default_template = """<p class="caption-container">
             {% endif %} />
     </a>
     <span class="caption-text muted">{{title}}</span>
-</p>"""
+</spam>"""
 
 logger = logging.getLogger(__name__)
 

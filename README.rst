@@ -54,7 +54,7 @@ Settings
 
 .. code-block:: html
 
-    <p class="caption-container">
+    <spam class="caption-container">
         <a class="caption" href="{{url}}" target="_blank">
             <img src="{{raw_url}}"
                 alt="{{title}}"
@@ -66,7 +66,7 @@ Settings
                 {% endif %} />
         </a>
         <span class="caption-text muted">{{title}}</span>
-    </p>
+    </spam>
 
 ``FLICKR_TAG_CACHE_LOCATION`` - The cache location which stores the looked up photo information. This dramatically speeds up building of the site and permits you to do it offline as well. Defaults to `/tmp/com.chrisstreeter.flickrtag-images.cache` (Optional)
 
@@ -74,6 +74,9 @@ Settings
 
 ``FLICKR_TAG_IMAGE_SIZE`` - The size alias used if ``FLICKR_TAG_INCLUDE_DIMENSIONS`` is set to ``True``. Default is 'Medium 640'. See the `Flickr getSizes documentation`_ for the valid values. (Optional)
 
+``FLICKR_TAG_PLACE_HOLDER_PICT`` -  variable is mandatory in your config if you dont have ``FLICKR_API_KEY`` pointing to a local pict how serve as a placeholder
+
+``FLICKR_TAG_PLACE_HOLDER_LINK`` - link associated with placeholder pict Default to git repo of this plug-in
 
 Flickr Settings
 ---------------
@@ -92,7 +95,21 @@ A Flickr API token is only required if you want to access photos that are privat
 
 ``FLICKR_API_TOKEN`` - The API token to access the Flickr API. (Optional)
 
+pelicanconf.py may be get something like:
 
+.. code-block:: python
+
+FLICKR_API_KEY = ''
+FLICKR_API_SECRET = ''
+FLICKR_USER = ''
+FLICKR_TAG_CACHE_LOCATION = './tmp_flickr'
+FLICKR_TAG_TEMPLATE_NAME = 'images'
+FLICKR_TAG_PLACE_HOLDER_PICT = "/theme/images/place-holder.png"
+try:
+	from flickr_api.flickr_api import *
+except ImportError:
+	pass
+	
 Notes
 -----
 
