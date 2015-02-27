@@ -81,7 +81,7 @@ Settings
 Flickr Settings
 ---------------
 
-The following two settings are required. In order to set them up, you will need to set up a Flickr API key. You can do this by `creating an app on Flickr`_. If the blog is a personal blog, then apply for a non-commercial key. Once you've got your key and secret, add them to your `Pelican configuration`_.
+The following two settings are required. In order to set them up, you will need to set up a Flickr API key. You can do this by `creating an app on Flickr`_. If the blog is a personal blog, then apply for a non-commercial key. Once you've got your key and secret, add them apply `pelicanconf.py changes`_.
 
 ``FLICKR_API_KEY`` - The API key for your app to access the Flickr API. (Required)
 
@@ -95,21 +95,26 @@ A Flickr API token is only required if you want to access photos that are privat
 
 ``FLICKR_API_TOKEN`` - The API token to access the Flickr API. (Optional)
 
+pelicanconf.py changes
+----------------------
+
 pelicanconf.py may be get something like:
 
 .. code-block:: python
 
-FLICKR_API_KEY = ''
-FLICKR_API_SECRET = ''
-FLICKR_USER = ''
-FLICKR_TAG_CACHE_LOCATION = './tmp_flickr'
-FLICKR_TAG_TEMPLATE_NAME = 'images'
-FLICKR_TAG_PLACE_HOLDER_PICT = "/theme/images/place-holder.png"
-try:
-	from flickr_api.flickr_api import *
-except ImportError:
-	pass
-	
+    FLICKR_API_KEY = ''
+    FLICKR_API_SECRET = ''
+    FLICKR_USER = ''
+    FLICKR_TAG_CACHE_LOCATION = './tmp_flickr'
+    FLICKR_TAG_TEMPLATE_NAME = 'images'
+    FLICKR_TAG_PLACE_HOLDER_PICT = "/theme/images/place-holder.png"
+    try:
+	   from flickr_api import *
+    except ImportError:
+	   pass
+
+and create a file mamed flickr_api.py containing your key, secret and other settings
+
 Notes
 -----
 
