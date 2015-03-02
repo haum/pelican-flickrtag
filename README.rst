@@ -54,7 +54,7 @@ Settings
 
 .. code-block:: html
 
-    <spam class="caption-container">
+    <span class="caption-container">
         <a class="caption" href="{{url}}" target="_blank">
             <img src="{{raw_url}}"
                 alt="{{title}}"
