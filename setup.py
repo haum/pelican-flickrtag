@@ -9,8 +9,6 @@ try:
 except ImportError:
     from distutils.core import setup
 
-import pelican_flickrtag
-
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
@@ -32,7 +30,7 @@ requires = [
 
 setup(
     name='pelican-flickrtag',
-    version=pelican_flickrtag.__version__,
+    version='0.5.0',
     description='Display Flickr images easily in your Pelican articles.',
     long_description=readme,
     author='Chris Streeter',
